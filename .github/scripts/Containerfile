@@ -1,8 +1,10 @@
 # Source of truth: SCRIPTS/githubactions. Generated copies are overwritten.
 # Existing Smart1 Supergateway reference used by the GSC and Firefly images.
 FROM docker.io/supercorp/supergateway:4.1.0@sha256:1938c43538a5308bce07d58028e9de00b7acfecb40b39b059b2f3931800ad910
-# Upgrade Node in the pinned image; retain the supplied Supergateway unchanged.
-RUN npm install --global node@24.18.0 && node --version
+# Use Alpine's musl-compatible Node; retain the supplied Supergateway unchanged.
+RUN apk add --no-cache nodejs \
+    && ln -sf /usr/bin/node /usr/local/bin/node \
+    && node --input-type=module -e "import 'node:sqlite'; const [major,minor]=process.versions.node.split('.').map(Number); if(major<22||(major===22&&minor<16))process.exit(1); console.log(process.version)"
 WORKDIR /opt/duengerrechner
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force

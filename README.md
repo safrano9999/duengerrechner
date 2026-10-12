@@ -1,7 +1,7 @@
 # Düngerrechner mit API und MCP
 
 - Dieses Projekt erweitert [bergrows Düngerrechner](https://github.com/bergrow/duengerrechner) um REST für MCP und zusätzlich GraphQL.
-- Die ursprüngliche WebUI bleibt erhalten. Unten stehen die API- und MCP-URLs.
+- Die [WebUI auf GitHub Pages](https://safrano9999.github.io/duengerrechner/) bleibt erhalten. Unten stehen API, MCP und GitHub.
 - Bare Metal nutzt FastAPI. Eine systemd-Datei wird erzeugt.
 - Container laufen mit Docker oder Podman. Ein systemd-Quadlet wird erzeugt.
 - Das [Container-Image](https://github.com/safrano9999/duengerrechner/pkgs/container/duengerrechner) heißt `ghcr.io/safrano9999/duengerrechner:latest`.

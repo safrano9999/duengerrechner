@@ -12,7 +12,7 @@ Intern gelten fest API `8080`, MCP `8000` und Supergateway `127.0.0.1:8001`. MCP
 
 `ADDITIONAL_LINE` ergänzt Quadlet-Zeilen. Weitere Zeilen heißen `ADDITIONAL_LINE_02` usw. Beispiel: `Network=mein-netzwerk`. Diese Podman-Einstellungen gelten nur für das Quadlet.
 
-Das Image heißt `ghcr.io/safrano9999/duengerrechner:latest`. Die Basis bleibt Supergateway `4.1.0@sha256:1938c43538a5308bce07d58028e9de00b7acfecb40b39b059b2f3931800ad910`, entsprechend der bestehenden GSC-/Firefly-Konfiguration. Node wird beim Build auf 24.18.0 aktualisiert. Das Image enthält keinen Python-Proxy.
+Das Image heißt `ghcr.io/safrano9999/duengerrechner:latest`. Die Basis bleibt Supergateway `4.1.0@sha256:1938c43538a5308bce07d58028e9de00b7acfecb40b39b059b2f3931800ad910`, entsprechend der bestehenden GSC-/Firefly-Konfiguration. Node kommt beim Build aus dem Alpine-Paketbestand; mindestens Version 22.16 wird geprüft. Das Image enthält keinen Python-Proxy.
 
 Auf der Infrastruktur von core/rafael erfolgen Image-Pulls ausschließlich über Smart1 und dessen `images.json`. Eine Aufnahme ins Inventar erfolgt nach ausdrücklicher Beauftragung. Compose und Quadlet verwenden `Pull=never` beziehungsweise `pull_policy: never`.
 
