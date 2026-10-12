@@ -1,6 +1,7 @@
 import '../js/nutrients.js';
 import '../js/fertilizers.js';
 import { z } from 'zod';
+import { assessTargets } from './targets.mjs';
 
 export const core = globalThis.DuengerCore;
 export const catalog = globalThis.DuengerFertilizers.map(({ u, ...f }) => ({ ...f, unit: u }));
@@ -23,6 +24,7 @@ export const profileSchema = z.object({
 }).strict();
 const customSchema = z.object({ name: z.string().min(1).max(200), unit: z.enum(['g', 'ml']), nutrients: nutrientSchema }).strict();
 export const mixtureSchema = z.object({
+  stage: z.enum(['veg', 'gen']).optional().describe('Growth phase: veg = vegetative (default, as in WebUI), gen = generative. Determines target ranges.'),
   fertilizers: z.array(z.object({
     id: z.number().int().nonnegative().optional(), custom: customSchema.optional(),
     dose: nonnegative, unit: z.enum(['g', 'ml']).optional(),
@@ -76,6 +78,7 @@ export function calculate(input, selected = null) {
   for (const k of core.nutrients) totals[k] = core.round(totals[k] + contribution[k], 6);
   return {
     volume_l: input.volume_l, fertilizers: rows, totals_mg_l: totals,
+    target_assessment: assessTargets(totals, input.stage ?? 'veg', input.stage === undefined),
     nitrogen_percent: Object.fromEntries(['n-no3', 'n-nh4', 'n-nu', 'n-org'].map(k => [k, totals.n ? core.round(totals[k] / totals.n * 100, 3) : 0])),
     water: { source: input.water ? 'inline' : selected ? 'profile' : 'none', profile_id: selected?.id ?? null, name: selected?.name ?? null,
       dilution_percent: input.dilution_percent ?? w?.dilution_percent ?? 0, nutrients_mg_l: contribution, hardness_dh: hardness,

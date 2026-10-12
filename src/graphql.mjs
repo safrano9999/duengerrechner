@@ -12,13 +12,19 @@ const schema = createSchema({
     input ProfileInput { name: String!, water: JSON!, is_default: Boolean }
     input CustomFertilizer { name: String!, unit: String!, nutrients: JSON! }
     input Dose { id: Int, custom: CustomFertilizer, dose: Float!, unit: String }
-    input Mixture { fertilizers: [Dose!]!, profile_id: ID, use_default_profile: Boolean,
+    enum GrowthStage { veg gen }
+    input Mixture { stage: GrowthStage, fertilizers: [Dose!]!, profile_id: ID, use_default_profile: Boolean,
       water: JSON, dilution_percent: Float, volume_l: Float }
     type Contribution { id: Int, name: String!, dose: Float!, unit: String!, amount: Float!, nutrients_mg_l: Nutrients! }
     type Hardness { gh: Float, kh: Float }
     type WaterResult { source: String!, profile_id: ID, name: String, dilution_percent: Float!,
       nutrients_mg_l: Nutrients!, hardness_dh: Hardness!, unknown_nutrients: [String!]! }
-    type Calculation { volume_l: Float!, fertilizers: [Contribution!]!, totals_mg_l: Nutrients!,
+    type TargetCheck { nutrient: String!, unit: String!, actual: Float, min: Float, max: Float,
+      min_inclusive: Boolean!, max_inclusive: Boolean!, status: String!, distance_to_range: Float, adjustment: String! }
+    type TargetAssessment { source: String!, stage: GrowthStage!, stage_defaulted: Boolean!, objective: String!,
+      all_in_range: Boolean!, out_of_range_count: Int!, checks: [TargetCheck!]!, deviations: [TargetCheck!]!,
+      unassessable: [String!]!, unassessed_nutrients: [String!]!, notes: [String!]! }
+    type Calculation { target_assessment: TargetAssessment!, volume_l: Float!, fertilizers: [Contribution!]!, totals_mg_l: Nutrients!,
       nitrogen_percent: Nutrients!, water: WaterResult!, warnings: [String!]! }
     type Query {
       fertilizers(search: String): [Fertilizer!]!

@@ -63,6 +63,19 @@ Dosen gelten in `g/l` oder `ml/l`, Ergebnisse in `mg/l`. `volume_l` berechnet zu
 
 Ohne `profile_id` greift das Standardprofil. Ohne gespeichertes Profil funktioniert die Rechnung mit den Düngerwerten allein. `use_default_profile: false` unterdrückt das Standardprofil. Inline-Wasser überschreibt die automatische Auswahl. Härte gilt in °dH, `ks` in mmol/l. Härte allein liefert keine Calcium-/Magnesium-Aufteilung; unbekannte Wasserwerte werden ausgewiesen. `dilution_percent` bezeichnet den Anteil nährstofffreien Verdünnungswassers.
 
+`stage` wählt `veg` (vegetativ, Standard wie in der WebUI) oder `gen` (generativ). Jede Einzel- und Batch-Berechnung liefert `target_assessment`. GraphQL bietet dieselben Felder an.
+
+Die Prüfung nutzt die „Optimalen Bereiche für mineralische Düngung“ aus der WebUI: N, P, K, Ca, Mg, S und sechs Spurenelemente in mg/l. Zusätzlich gelten Nitrat > 70 % und Ammonium < 30 % des Gesamtstickstoffs. Ohne Stickstoff sind diese Anteile nicht bewertbar.
+
+- `checks` enthält Istwert, Unter-/Obergrenze und Status (`below`, `above`, `within_range`, `not_assessable`).
+- `deviations` nennt alle zu niedrigen und zu hohen Werte. `distance_to_range` gibt den Abstand an, `adjustment` die Richtung (`increase`/`decrease`). Prozentwerte verwenden Prozentpunkte.
+- `all_in_range` ist nur wahr, wenn alle 14 Prüfungen im Bereich liegen. `unassessable` nennt nicht bewertbare Prüfungen.
+- `stage_defaulted` zeigt eine automatisch gewählte Phase. Wasserwarnungen und unbekannte Werte bleiben sichtbar.
+
+Der Agent soll zuerst die Sollbereiche erreichen. Dazu Dosierungen ändern, erneut berechnen und bereits passende Werte im Bereich halten. Ein Referenzverhältnis ist nachrangig. Verbleibende Abweichungen und fehlende Daten müssen benannt werden. Die Bewertung gilt für die berechneten Werte und garantiert kein insgesamt optimales Düngeschema.
+
+Beispiel: 50,186 mg/l Phosphor liegt vegetativ 10,186 mg/l über dem Maximum von 40 mg/l. Generativ liegt derselbe Wert im Bereich von 25–90 mg/l. An einer strikten Prozentgrenze ist auch bei Abstand 0 noch eine Änderung nötig.
+
 Die Rundung entspricht der WebUI: drei Nachkommastellen je Beitrag. Nitrat aus Wasser wird zusätzlich als bekannter Nitratstickstoff ausgewiesen.
 
 ```sh

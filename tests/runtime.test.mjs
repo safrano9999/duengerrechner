@@ -28,6 +28,8 @@ async function mcpCheck(url, token) {
       const r = await client.callTool({ name: 'calculate_mixture', arguments: { fertilizers: [{ id: 27, dose: 1 }], use_default_profile: false } });
       assert.equal(r.isError, undefined, JSON.stringify(r));
       assert.equal(r.structuredContent.result.totals_mg_l.n, 200);
+      assert.equal(r.structuredContent.result.target_assessment.stage, 'veg');
+      assert.equal(r.structuredContent.result.target_assessment.checks.length, 14);
     } finally { await client.close(); }
   }
 }

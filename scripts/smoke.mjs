@@ -17,9 +17,11 @@ assert.ok(catalog.some(f => f.id === 27));
 const input = { fertilizers: [{ id: 27, dose: 0.5 }, { id: 28, dose: 0.75 }], use_default_profile: false };
 const rest = await req('/api/calculate', input);
 assert.equal(rest.totals_mg_l.n, 160);
-const gql = await req('/graphql', { query: 'query($input:Mixture!){calculate(input:$input){totals_mg_l{n p k}}}', variables: { input } });
+assert.equal(rest.target_assessment.deviations.find(c => c.nutrient === 'p').distance_to_range, 10.186);
+const gql = await req('/graphql', { query: 'query($input:Mixture!){calculate(input:$input){totals_mg_l{n p k} target_assessment{stage all_in_range}}}', variables: { input } });
 assert.equal(gql.errors, undefined, JSON.stringify(gql));
 assert.equal(gql.data.calculate.totals_mg_l.n, rest.totals_mg_l.n);
+assert.equal(gql.data.calculate.target_assessment.stage, 'veg');
 const client = new Client({ name: 'deployment-smoke', version: '1' });
 await client.connect(new StreamableHTTPClientTransport(new URL(process.env.MCP_URL || base + '/mcp'), { requestInit: { headers: process.env.MCP_BEARER_TOKEN ? { Authorization: `Bearer ${process.env.MCP_BEARER_TOKEN}` } : {} } }));
 try {
@@ -27,6 +29,7 @@ try {
   const mcp = await client.callTool({ name: 'calculate_mixture', arguments: input });
   assert.equal(mcp.isError, undefined, JSON.stringify(mcp));
   assert.deepEqual(mcp.structuredContent.result.totals_mg_l, rest.totals_mg_l);
+  assert.deepEqual(mcp.structuredContent.result.target_assessment, rest.target_assessment);
 } finally { await client.close(); }
 // Probe the modern stateless protocol directly; no initialize or legacy fallback.
 async function modern(method, params = {}) {
@@ -52,7 +55,9 @@ async function modern(method, params = {}) {
 }
 assert.ok((await modern('server/discover')).supportedVersions.includes('2026-07-28'));
 assert.equal((await modern('tools/list')).tools.length, 7);
-assert.deepEqual((await modern('tools/call', { name: 'calculate_mixture', arguments: input })).structuredContent.result.totals_mg_l, rest.totals_mg_l);
+const modernResult = (await modern('tools/call', { name: 'calculate_mixture', arguments: input })).structuredContent.result;
+assert.deepEqual(modernResult.totals_mg_l, rest.totals_mg_l);
+assert.deepEqual(modernResult.target_assessment, rest.target_assessment);
 if (process.argv.includes('--profiles')) {
   const p = await req('/api/profiles', { name: `Smoke test ${crypto.randomUUID()}`, water: { ca: 47, mg: 9 } });
   try {

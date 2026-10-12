@@ -4,6 +4,7 @@ Erweiterung von [bergrows Düngerrechner](https://github.com/bergrow/duengerrech
 
 - **API:** REST & GraphQL.
 - **MCP:** über REST.
+- **Sollbereiche:** Jede Berechnung meldet Abweichungen und nötige Anpassungen.
 - **Betrieb:** Bare Metal mit FastAPI, Docker/Podman oder Cloudflare Worker.
 - **systemd:** Service & Quadlet.
 - **Konfiguration:** injizierbare `.env`, optionale Bearer-Tokens.

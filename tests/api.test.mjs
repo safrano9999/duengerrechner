@@ -114,6 +114,10 @@ test('official MCP client initializes, lists tools, calculates and writes profil
   const result = await client.callTool({ name: 'calculate_mixture', arguments: mixture });
   assert.equal(result.isError, undefined, JSON.stringify(result));
   assert.equal(result.structuredContent.result.totals_mg_l.n, 160);
+  assert.equal(result.structuredContent.result.target_assessment.deviations.find(c => c.nutrient === 'p').status, 'above');
+  const generative = await client.callTool({ name: 'calculate_mixture', arguments: { ...mixture, stage: 'gen' } });
+  assert.equal(generative.structuredContent.result.target_assessment.stage_defaulted, false);
+  assert.equal(generative.structuredContent.result.target_assessment.checks.find(c => c.nutrient === 'p').status, 'within_range');
   const saved = await client.callTool({ name: 'save_water_profile', arguments: { name: 'MCP', water: { ca: 11 } } });
   assert.equal(saved.isError, undefined, JSON.stringify(saved));
   const calculated = await client.callTool({ name: 'calculate_mixture', arguments: mixture });

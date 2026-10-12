@@ -14,7 +14,7 @@ export function restClient(baseUrl, token = '', request = fetch) {
   };
 }
 export function createMcp(call) {
-  const server = new McpServer({ name: 'duengerrechner', version: '1.0.0' });
+  const server = new McpServer({ name: 'duengerrechner', version: '1.1.0' }, { instructions: 'Focus on reaching the WebUI target ranges for mineral fertilization. Each calculation returns target_assessment: inspect deviations and unassessable values, adjust fertilizer doses, and recalculate. Keep already in-range values in range. Prioritize the target ranges before matching a reference fertilizer ratio. Choose stage veg or gen; omission defaults to veg. Respect water warnings and never claim an optimal result while checks fail or required data is missing.' });
   const register = (name, description, inputSchema, handler, readOnlyHint = true) => {
     server.registerTool(name, { description, inputSchema, annotations: { readOnlyHint, destructiveHint: name === 'delete_water_profile', openWorldHint: false } }, async args => {
       try {
@@ -26,9 +26,9 @@ export function createMcp(call) {
   register('search_fertilizers', 'Find fertilizer IDs, dosing units and elemental nutrients in mg per g or ml. Search by name; no search lists the catalog.', z.object({ search: z.string().max(200).optional() }),
     ({ search }) => call('GET', `/fertilizers?search=${encodeURIComponent(search ?? '')}`));
   register('get_fertilizer', 'Read the composition and dosing unit of one fertilizer.', z.object({ id: z.number().int().nonnegative() }), ({ id }) => call('GET', `/fertilizers/${id}`));
-  register('calculate_mixture', 'Deterministically calculate a mixture: dose is g/l or ml/l, results are mg/l. Default water profile is used if present; no profiles still permits calculation. Set use_default_profile=false for fertilizer-only results. Hardness alone cannot determine calcium and magnesium. Change doses and call again to compare variants.', mixtureSchema,
+  register('calculate_mixture', 'Deterministically calculate a mixture: dose is g/l or ml/l, results are mg/l. Default water profile is used if present; no profiles still permits calculation. Set use_default_profile=false for fertilizer-only results. Hardness alone cannot determine calcium and magnesium. Primary goal: reach the target ranges. Choose stage veg or gen (default veg). Always inspect target_assessment: it reports every target, below/above deviations, distance and adjustment direction. Adjust doses and recalculate until checks pass; keep in-range values in range and disclose remaining deviations or missing data.', mixtureSchema,
     args => call('POST', '/calculate', args));
-  register('calculate_batch', 'Calculate up to 50 mixtures in one call. Compare variants or reference schemes; this tool does not choose or optimize doses.', batchSchema,
+  register('calculate_batch', 'Calculate up to 50 mixtures in one call. Each result includes target_assessment. Prioritize bringing all values into the selected phase target ranges; compare deviations and distances, adjust doses and recalculate. Match a reference scheme only within those ranges. This tool evaluates candidates deterministically; the agent chooses doses.', batchSchema,
     args => call('POST', '/calculate/batch', args));
   register('list_water_profiles', 'List stored water profiles and identify the default.', z.object({}), () => call('GET', '/profiles'));
   register('save_water_profile', 'Create a water profile, or replace one by id. Water concentrations: mg/l, gh/kh: degrees German hardness, ks: mmol/l, dilution_percent: nutrient-free water percentage. First profile is default; is_default=true changes the default. Profiles belong to this server instance.', profileSchema.extend({ id: z.string().max(100).optional() }),

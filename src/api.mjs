@@ -47,10 +47,10 @@ export function createApi(store, config = {}) {
 }
 const definitions = { Mixture: mixtureSchema, Batch: batchSchema, ProfileInput: profileSchema };
 const jsonSchema = Object.fromEntries(Object.entries(definitions).map(([k,v]) => [k,z.toJSONSchema(v, { io: 'input' })]));
-const response = { '200': { description: 'Success' }, '401': { description: 'Invalid or missing bearer token' }, '422': { description: 'Invalid input' } };
+const response = { '200': { description: 'Success. Calculations include target_assessment with phase-specific target ranges, per-value status, deviations and adjustment directions.' }, '401': { description: 'Invalid or missing bearer token' }, '422': { description: 'Invalid input' } };
 const body = ref => ({ required: true, content: { 'application/json': { schema: { $ref: `#/components/schemas/${ref}` } } } });
 export const openapi = {
-  openapi: '3.1.0', info: { title: 'Düngerrechner REST API', version: '1.0.0', description: 'Optional instance-wide Bearer authentication. Dose is g/l or ml/l. Water is mg/l; gh/kh in °dH, ks in mmol/l. No profile means the default profile, or fertilizer-only calculation if none exists.' },
+  openapi: '3.1.0', info: { title: 'Düngerrechner REST API', version: '1.0.0', description: 'Optional instance-wide Bearer authentication. Dose is g/l or ml/l. Water is mg/l; gh/kh in °dH, ks in mmol/l. No profile means the default profile, or fertilizer-only calculation if none exists. stage selects veg (default) or gen. Every calculation includes target_assessment based on the WebUI mineral fertilization ranges. Prioritize reaching these ranges before matching a reference ratio.' },
   components: { schemas: jsonSchema, securitySchemes: { bearer: { type: 'http', scheme: 'bearer' } } },
   security: [{ bearer: [] }, {}],
   paths: {

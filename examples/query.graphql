@@ -6,11 +6,20 @@ query {
     nutrients { n p k ca mg }
   }
   calculate(input: {
+    stage: veg,
     fertilizers: [{id: 27, dose: 0.5}, {id: 28, dose: 0.75}],
     volume_l: 10,
     use_default_profile: false
   }) {
     totals_mg_l { n p k ca mg s }
+    target_assessment {
+      stage
+      all_in_range
+      out_of_range_count
+      deviations { nutrient unit actual min max min_inclusive max_inclusive status distance_to_range adjustment }
+      unassessable
+      objective
+    }
     fertilizers { name amount unit }
     warnings
   }
