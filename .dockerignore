@@ -1,0 +1,11 @@
+*
+!.github/scripts/Containerfile
+!package.json
+!package-lock.json
+!src/**
+!js/**
+!css/**
+!assets/**
+!index.html
+!backend.example.json
+!scripts/gateway-loopback.mjs

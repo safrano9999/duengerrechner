@@ -1,13 +1,5 @@
 var systemTheme = () => (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-const convTable = {
-  cao: { to: "ca", factor: 0.715 },
-  k2o: { to: "k", factor: 0.8302 },
-  mgo: { to: "mg", factor: 0.603 },
-  no3: { to: "n", factor: 0.226 },
-  p2o5: { to: "p", factor: 0.436 },
-  po4: { to: "p", factor: 0.326 },
-  so4: { to: "s", factor: 0.334 },
-};
+const convTable = DuengerCore.conversions;
 var waterData = JSON.parse(localStorage.getItem("waterData")) || {};
 var waterLimits = {
   kh: 10,

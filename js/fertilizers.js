@@ -4704,5 +4704,6 @@ const fertData = [
     u: "g",
   },
 ];
-var customFertData = JSON.parse(localStorage.getItem("customFertData")) || [];
+globalThis.DuengerFertilizers = fertData;
+var customFertData = typeof localStorage === "undefined" ? [] : JSON.parse(localStorage.getItem("customFertData")) || [];
 const allFertData = () => fertData.concat(customFertData);

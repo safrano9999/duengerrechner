@@ -1,0 +1,5 @@
+{
+  "name": "Leitungswasser",
+  "water": { "ca": 80, "mg": 20, "no3": 10, "ks": 2, "dilution_percent": 0 },
+  "is_default": true
+}

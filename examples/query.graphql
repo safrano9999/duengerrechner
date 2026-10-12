@@ -1,0 +1,17 @@
+query {
+  fertilizers(search: "Hakaphos") {
+    id
+    name
+    unit
+    nutrients { n p k ca mg }
+  }
+  calculate(input: {
+    fertilizers: [{id: 27, dose: 0.5}, {id: 28, dose: 0.75}],
+    volume_l: 10,
+    use_default_profile: false
+  }) {
+    totals_mg_l { n p k ca mg s }
+    fertilizers { name amount unit }
+    warnings
+  }
+}

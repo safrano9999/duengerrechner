@@ -82,3 +82,5 @@ tfoot > tr:first-of-type > td {
 footer > p {
   text-align: right;
 }
+
+.backend-links { display: none !important; }

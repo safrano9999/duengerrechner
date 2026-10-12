@@ -13,7 +13,7 @@ const updateRow = (row, data, multiplier = 1, limits) => {
   row.querySelectorAll("span").forEach((span) => {
     const name = span.getAttribute("name");
     let value = data[name];
-    value = isString(value) ? value : round(value * multiplier, 3);
+    value = isString(value) ? value : DuengerCore.scale(value, multiplier);
     span.dataset.value = value;
     span.textContent = isString(value) ? value : formatValue(value, decimals(name));
     if (!limits || isString(value)) return;

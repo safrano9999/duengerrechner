@@ -1,0 +1,21 @@
+# Source of truth: SCRIPTS/githubactions. Generated copies are overwritten.
+# Existing Smart1 Supergateway reference used by the GSC and Firefly images.
+FROM docker.io/supercorp/supergateway:4.1.0@sha256:1938c43538a5308bce07d58028e9de00b7acfecb40b39b059b2f3931800ad910
+# Upgrade Node in the pinned image; retain the supplied Supergateway unchanged.
+RUN npm install --global node@24.18.0 && node --version
+WORKDIR /opt/duengerrechner
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+COPY src ./src
+COPY js ./js
+COPY css ./css
+COPY assets ./assets
+COPY index.html backend.example.json ./
+COPY scripts/gateway-loopback.mjs ./scripts/gateway-loopback.mjs
+ENV CONTAINER_MODE=1
+EXPOSE 8080 8000
+RUN mkdir /data && chown node:node /data
+USER node
+VOLUME ["/data"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s CMD node -e "Promise.all([8080,8000].map(p=>fetch('http://127.0.0.1:'+p+'/health').then(r=>{if(!r.ok)throw Error(r.status)}))).catch(()=>process.exit(1))"
+ENTRYPOINT ["node", "src/launch.mjs"]

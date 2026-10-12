@@ -1,0 +1,8 @@
+{
+  "fertilizers": [
+    { "id": 27, "dose": 0.5 },
+    { "id": 28, "dose": 0.75 }
+  ],
+  "volume_l": 10,
+  "use_default_profile": false
+}

@@ -1,0 +1,23 @@
+#container-command: image
+#container-port: API_PUBLISH_PORT 8080
+#container-port: MCP_PUBLISH_PORT 8000
+# Host publication only. Empty/blank means no publication; services still run internally.
+#default-preset: 127.0.0.1
+API_PUBLISH_HOST=127.0.0.1
+
+API_PUBLISH_PORT=
+
+#default-preset: 127.0.0.1
+MCP_PUBLISH_HOST=127.0.0.1
+
+MCP_PUBLISH_PORT=
+
+#default-preset: duengerrechner-data:/data:Z
+DATA_VOLUMES=duengerrechner-data:/data:Z
+
+# Smart1 is responsible for pulling images. Never pull implicitly on service start.
+#repeat-group: ADDITIONAL_LINE suffix02 ADDITIONAL_LINE
+#repeat-freeform: ADDITIONAL_LINE
+#choices: Pull=never Network=pasta Network=slirp4netns:mtu=1500
+#default-preset: Pull=never
+ADDITIONAL_LINE=Pull=never
