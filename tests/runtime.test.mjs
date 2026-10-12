@@ -11,15 +11,25 @@ import { mcpApp } from '../src/mcp-http.mjs';
 import { serve } from '@hono/node-server';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { Client as ModernClient, StreamableHTTPClientTransport as ModernTransport } from '@modelcontextprotocol/client';
 import { settings } from '../src/settings.mjs';
 
 async function port() { const s=createServer(); await new Promise(r=>s.listen(0,'127.0.0.1',r)); const p=s.address().port; await new Promise(r=>s.close(r)); return p; }
 async function ready(url, child) { for(let i=0;i<150;i++){ if(child.exitCode!==null) throw Error('Child exited: '+child.exitCode); try {if((await fetch(url)).ok)return;}catch{} await delay(100); } throw Error('Startup timeout'); }
 async function stop(child) { if(child.exitCode!==null)return; const done=new Promise(r=>child.once('exit',r)); child.kill('SIGTERM'); const timer=setTimeout(()=>child.kill('SIGKILL'),5000); await done;clearTimeout(timer); }
 async function mcpCheck(url, token) {
-  const client=new Client({name:'integration',version:'1'});
-  await client.connect(new StreamableHTTPClientTransport(new URL(url),{requestInit:{headers:{Authorization:`Bearer ${token}`}}}));
-  try { const r=await client.callTool({name:'calculate_mixture',arguments:{fertilizers:[{id:27,dose:1}],use_default_profile:false}}); assert.equal(r.isError,undefined,JSON.stringify(r)); assert.equal(r.structuredContent.result.totals_mg_l.n,200); } finally {await client.close();}
+  for (const modern of [false, true]) {
+    const ClientClass = modern ? ModernClient : Client;
+    const Transport = modern ? ModernTransport : StreamableHTTPClientTransport;
+    const client = new ClientClass({ name: 'integration', version: '1' }, modern ? { versionNegotiation: { mode: { pin: '2026-07-28' } } } : {});
+    await client.connect(new Transport(new URL(url), { requestInit: { headers: { Authorization: `Bearer ${token}` } } }));
+    try {
+      assert.equal((await client.listTools()).tools.length, 7);
+      const r = await client.callTool({ name: 'calculate_mixture', arguments: { fertilizers: [{ id: 27, dose: 1 }], use_default_profile: false } });
+      assert.equal(r.isError, undefined, JSON.stringify(r));
+      assert.equal(r.structuredContent.result.totals_mg_l.n, 200);
+    } finally { await client.close(); }
+  }
 }
 
 test('container settings ignore bare-metal ports and use loopback REST',()=>{

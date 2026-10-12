@@ -28,6 +28,31 @@ try {
   assert.equal(mcp.isError, undefined, JSON.stringify(mcp));
   assert.deepEqual(mcp.structuredContent.result.totals_mg_l, rest.totals_mg_l);
 } finally { await client.close(); }
+// Probe the modern stateless protocol directly; no initialize or legacy fallback.
+async function modern(method, params = {}) {
+  const r = await fetch(process.env.MCP_URL || base + '/mcp', {
+    method: 'POST', headers: {
+      'Content-Type': 'application/json', Accept: 'application/json, text/event-stream',
+      'MCP-Protocol-Version': '2026-07-28', 'Mcp-Method': method,
+      ...(params.name ? { 'Mcp-Name': params.name } : {}),
+      ...(process.env.MCP_BEARER_TOKEN ? { Authorization: `Bearer ${process.env.MCP_BEARER_TOKEN}` } : {}),
+    },
+    body: JSON.stringify({ jsonrpc: '2.0', id: method, method, params: { ...params, _meta: {
+      'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+      'io.modelcontextprotocol/clientInfo': { name: 'deployment-smoke', version: '1' },
+      'io.modelcontextprotocol/clientCapabilities': {},
+    } } }),
+    signal: AbortSignal.timeout(15000),
+  });
+  assert.equal(r.status, 200, `modern ${method}: ${await r.clone().text()}`);
+  const body = await r.json();
+  assert.equal(body.error, undefined, JSON.stringify(body));
+  assert.equal(body.result.resultType, 'complete');
+  return body.result;
+}
+assert.ok((await modern('server/discover')).supportedVersions.includes('2026-07-28'));
+assert.equal((await modern('tools/list')).tools.length, 7);
+assert.deepEqual((await modern('tools/call', { name: 'calculate_mixture', arguments: input })).structuredContent.result.totals_mg_l, rest.totals_mg_l);
 if (process.argv.includes('--profiles')) {
   const p = await req('/api/profiles', { name: `Smoke test ${crypto.randomUUID()}`, water: { ca: 47, mg: 9 } });
   try {
@@ -36,4 +61,4 @@ if (process.argv.includes('--profiles')) {
     assert.equal((await req(`/api/profiles/${p.id}`)).name, p.name);
   } finally { await req(`/api/profiles/${p.id}`, undefined, 'DELETE'); }
 }
-console.log(`OK: UI, REST, GraphQL, MCP${process.argv.includes('--profiles') ? ', profile storage' : ''} at ${base}`);
+console.log(`OK: UI, REST, GraphQL, MCP legacy + 2026-07-28${process.argv.includes('--profiles') ? ', profile storage' : ''} at ${base}`);

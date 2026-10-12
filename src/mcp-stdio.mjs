@@ -1,6 +1,5 @@
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { createMcp, restClient } from './mcp.mjs';
 import { settings } from './settings.mjs';
 const config = settings();
-const server = createMcp(restClient(config.apiUrl, config.API_BEARER_TOKEN));
-await server.connect(new StdioServerTransport());
+serveStdio(() => createMcp(restClient(config.apiUrl, config.API_BEARER_TOKEN)));

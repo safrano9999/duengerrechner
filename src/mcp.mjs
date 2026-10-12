@@ -1,5 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import { McpServer, createMcpHandler } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import { mixtureSchema, batchSchema, profileSchema } from './domain.mjs';
 export function restClient(baseUrl, token = '', request = fetch) {
@@ -38,10 +37,6 @@ export function createMcp(call) {
     ({ id }) => call('DELETE', `/profiles/${encodeURIComponent(id)}`), false);
   return server;
 }
-export async function handleMcp(request, call) {
-  const server = createMcp(call);
-  const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
-  await server.connect(transport);
-  try { return await transport.handleRequest(request); }
-  finally { await server.close(); }
+export function createMcpHttpHandler(call) {
+  return createMcpHandler(() => createMcp(call), { legacy: 'stateless', responseMode: 'auto', maxRequestBodySize: 256 * 1024 });
 }

@@ -73,6 +73,12 @@ curl -H 'Content-Type: application/json' \
 
 Bei aktivem Schutz zusätzlich `Authorization: Bearer <Token>` senden. Weitere Beispiele stehen in `examples/`.
 
+## ChatGPT
+
+MCP-URL: `https://duengerrechner.safrano9999.workers.dev/mcp`.
+Authentication: `None`, solange kein MCP-Bearer-Token gesetzt ist.
+MCP `2026-07-28` und ältere Clients werden unterstützt.
+
 ## Cloudflare und GitHub Pages
 
 Die genaue Einrichtung steht in [CLOUDFLARE-WORKER-SKILL.md](../CLOUDFLARE-WORKER-SKILL.md).
