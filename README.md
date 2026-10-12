@@ -17,3 +17,11 @@ Erweiterung von [bergrows Düngerrechner](https://github.com/bergrow/duengerrech
 [Einrichtung und Beispiele](docs/betrieb.md)
 
 [Prompt um deinem Agenten diese Webui samt API und MCP auf einem Cloudflare worker einzurichten.](CLOUDFLARE-WORKER-SKILL.md)
+
+## Ergänzte Dünger
+
+Diese Dünger wurden im Fork ergänzt. Sie stehen in WebUI, REST, GraphQL und MCP zur Verfügung.
+
+| Dünger | Deklaration | Quelle | Originalprojekt |
+| --- | --- | --- | --- |
+| Green House Powder Feeding CalMag | N 13,5 % (Nitrat-N 13,1 %, Ammonium-N 0,4 %); CaO 16,7 %; MgO 6,0 %. Dosierung in g/l. | [Produktseite](https://www.growmart.de/Green-House-Powder-Feeding-CalMag-50g-25kg) | [Vorgeschlagen in #42](https://github.com/bergrow/duengerrechner/issues/42) |

@@ -2142,6 +2142,30 @@ const fertData = [
     u: "g",
   },
   {
+    // Fork addition; separate ID range avoids collisions with future upstream entries.
+    // Source: https://www.growmart.de/Green-House-Powder-Feeding-CalMag-50g-25kg
+    // Ca: 16.7% CaO * 10 * 0.715 = 119.405 mg/g; Mg: 6% MgO * 10 * 0.603 = 36.18 mg/g.
+    id: 1000001,
+    name: "Green House Powder Feeding CalMag",
+    n: 135,
+    "n-no3": 131,
+    "n-nh4": 4,
+    "n-nu": 0,
+    "n-org": 0,
+    p: 0,
+    k: 0,
+    ca: 119.405,
+    mg: 36.18,
+    s: 0,
+    b: 0,
+    cu: 0,
+    fe: 0,
+    mn: 0,
+    mo: 0,
+    zn: 0,
+    u: "g",
+  },
+  {
     id: 39,
     name: "Haifa Cal GG Calciumnitrat",
     n: 155,

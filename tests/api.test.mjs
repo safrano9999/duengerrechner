@@ -43,6 +43,23 @@ test('known mixture, dose units and volume give explicit expected values', async
   await assert.rejects(svc.calculate({ fertilizers: [{ id: 999999, dose: 1 }] }), /Unknown fertilizer/);
 });
 
+test('Green House CalMag is discoverable and converts declared oxide percentages to elemental mg/l', async t => {
+  const { req, svc } = setup(t);
+  const result = await (await req('/api/fertilizers?search=Green%20House%20Powder%20Feeding%20CalMag')).json();
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, 1000001);
+  assert.equal(result[0].unit, 'g');
+  const r = await svc.calculate({ fertilizers: [{ id: result[0].id, dose: 1 }], volume_l: 10, use_default_profile: false });
+  assert.equal(r.fertilizers[0].amount, 10);
+  assert.equal(r.totals_mg_l.n, 135);
+  assert.equal(r.totals_mg_l['n-no3'], 131);
+  assert.equal(r.totals_mg_l['n-nh4'], 4);
+  assert.equal(r.totals_mg_l.ca, 119.405);
+  assert.equal(r.totals_mg_l.mg, 36.18);
+  assert.equal(r.totals_mg_l['n-nu'], 0);
+  assert.equal(r.target_assessment.checks.find(c => c.nutrient === 'n-no3').status, 'within_range');
+});
+
 test('profile defaults, explicit selection, replacement, deletion and dilution', async t => {
   const { svc } = setup(t);
   const a = await svc.saveProfile({ name: 'A', water: { ca: 80, mg: 20, no3: 10, ks: 2 } });
