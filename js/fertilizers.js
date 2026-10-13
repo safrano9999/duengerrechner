@@ -693,6 +693,32 @@ const fertData = [
     u: "g",
   },
   {
+    // Fork addition. Use the EC FERTILIZER declaration, not the conflicting legacy prose.
+    // Source: https://bionovanutrients.com/de/micromix-mineralien/
+    // Density: 1.29 g/ml at 20 C (Micro Mix, article 6008; SDS revision 2015-10-06).
+    // https://bionovawebshop.com/media/56/66/5a/1601494439/MSDS-MicroMixGB.pdf
+    // Elemental mg/ml = declared mass percent * 10 * 1.29.
+    id: 1000003,
+    name: "Bionova Micromix",
+    n: 0,
+    "n-no3": 0,
+    "n-nh4": 0,
+    "n-nu": 0,
+    "n-org": 0,
+    p: 0,
+    k: 0,
+    ca: 0,
+    mg: 0,
+    s: 0,
+    b: 7.74,
+    cu: 2.193,
+    fe: 44.892,
+    mn: 8.772,
+    mo: 0.258,
+    zn: 5.676,
+    u: "ml",
+  },
+  {
     id: 8,
     name: "Bittersalz",
     n: 0,
@@ -2091,6 +2117,31 @@ const fertData = [
     ca: 0,
     mg: 19.99548,
     s: 60,
+    b: 0,
+    cu: 0,
+    fe: 0,
+    mn: 0,
+    mo: 0,
+    zn: 0,
+    u: "g",
+  },
+  {
+    // Fork addition. 9% elemental Ca (EDTA-chelated) = 90 mg/g, not 9% CaO.
+    // Source: https://www.greenhousefeeding.com/en/content/11-faq
+    // EDTA-bound nitrogen is not plant-available and is excluded from nutrient N.
+    // https://shop.greenhousefeeding.com/downloads/GHF_M%2BB_2019_USA.pdf (page 13)
+    id: 1000002,
+    name: "Green House Calcium Chelate",
+    n: 0,
+    "n-no3": 0,
+    "n-nh4": 0,
+    "n-nu": 0,
+    "n-org": 0,
+    p: 0,
+    k: 0,
+    ca: 90,
+    mg: 0,
+    s: 0,
     b: 0,
     cu: 0,
     fe: 0,

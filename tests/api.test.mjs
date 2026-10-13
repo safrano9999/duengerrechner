@@ -60,6 +60,36 @@ test('Green House CalMag is discoverable and converts declared oxide percentages
   assert.equal(r.target_assessment.checks.find(c => c.nutrient === 'n-no3').status, 'within_range');
 });
 
+test('Green House Calcium Chelate supplies elemental calcium without counting EDTA nitrogen', async t => {
+  const { req, svc } = setup(t);
+  const matches = await (await req('/api/fertilizers?search=Green%20House%20Calcium%20Chelate')).json();
+  assert.equal(matches.length, 1);
+  assert.equal(matches[0].id, 1000002);
+  assert.equal(matches[0].unit, 'g');
+  const r = await svc.calculate({ fertilizers: [{ id: matches[0].id, dose: 0.5, unit: 'g' }], volume_l: 10, use_default_profile: false });
+  assert.equal(r.fertilizers[0].amount, 5);
+  assert.equal(r.totals_mg_l.ca, 45);
+  for (const [nutrient, value] of Object.entries(r.totals_mg_l)) {
+    if (nutrient !== 'ca') assert.equal(value, 0, nutrient);
+  }
+});
+
+test('Bionova Micromix converts the declared trace elements using its liquid density', async t => {
+  const { req, svc } = setup(t);
+  const matches = await (await req('/api/fertilizers?search=Bionova%20Micromix')).json();
+  assert.equal(matches.length, 1);
+  assert.equal(matches[0].id, 1000003);
+  assert.equal(matches[0].unit, 'ml');
+  const r = await svc.calculate({ fertilizers: [{ id: matches[0].id, dose: 0.1, unit: 'ml' }], volume_l: 10, use_default_profile: false });
+  assert.equal(r.fertilizers[0].amount, 1);
+  // 0.1 ml/l * 1.29 g/ml * declared mass fractions, rounded like the WebUI.
+  const expected = { b: 0.774, cu: 0.219, fe: 4.489, mn: 0.877, mo: 0.026, zn: 0.568 };
+  for (const [nutrient, value] of Object.entries(r.totals_mg_l)) {
+    assert.equal(value, expected[nutrient] ?? 0, nutrient);
+  }
+  await assert.rejects(svc.calculate({ fertilizers: [{ id: matches[0].id, dose: 1, unit: 'g' }] }), /Expected ml/);
+});
+
 test('profile defaults, explicit selection, replacement, deletion and dilution', async t => {
   const { svc } = setup(t);
   const a = await svc.saveProfile({ name: 'A', water: { ca: 80, mg: 20, no3: 10, ks: 2 } });
