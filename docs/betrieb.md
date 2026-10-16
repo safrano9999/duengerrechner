@@ -134,10 +134,12 @@ systemctl --user start duengerrechner-cloudflare-logs.service
 Die Auswertung nutzt das GoAccess-Binary im bereits laufenden Container
 `litellm-free-goaccess`. Sie erzeugt einen eigenen Bericht ohne gemeinsame
 Statistikdatenbank. Es wird kein Image gezogen und kein neuer Container gestartet.
-Im bestehenden privaten Dashboard führt die Rubrik **Düngerrechner — MCP & API**
-zum Bericht unter `/duengerrechner/`. Die Übersicht zeigt getrennte MCP- und
-REST/GraphQL-Zähler; der Detailbericht enthält auch Web-Aufrufe und zeigt unter
-anderem Pfade, Methoden und HTTP-Status.
+Im Burgermenü des privaten Dashboards wechselt **Websites → Düngerrechner · MCP/API**
+zur eigenen vollständigen GoAccess-Seite unter `/duengerrechner/`.
+Oben stehen getrennte Bereiche für **API (REST/GraphQL)**, **MCP** und **Web**,
+jeweils mit Zählern, HTTP-Methoden, Pfaden und Status. Darunter folgen die üblichen
+GoAccess-Auswertungen. **F24 SALES** im selben Menü führt zurück zum getrennten
+F24-Bericht. Die Skripte in `deploy/goaccess-*.js` werden beim Pull aktualisiert.
 Die Zähler erfassen HTTP-Requests, nicht einzelne Werkzeuge innerhalb eines MCP-Batches.
 MCP-Browserbesuche und Protokollaufrufe sind über die HTTP-Methode unterscheidbar.
 

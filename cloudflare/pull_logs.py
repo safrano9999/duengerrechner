@@ -67,11 +67,9 @@ def render(result):
                '<title>Düngerrechner — MCP &amp; API</title><h1>Düngerrechner</h1>'
                '<p>Log-Abruf eingerichtet. Noch keine MCP- oder API-Requests erfasst.</p>'
                '<p><a href="/">Zur GoAccess-Übersicht</a></p></html>')
-    atomic(REPORT / 'navigation.js', "window.addEventListener('load',()=>{const p=document.createElement('p');"
-           "p.style.cssText='padding:12px;text-align:center';const a=document.createElement('a');"
-           "a.href='/';a.textContent='← F24 SALES / GoAccess-Übersicht';p.append(a);"
-           "const info=document.createElement('p');info.textContent='Eigener Cloudflare-Trafficbericht · MCP und API nach HTTP-Methode und Pfad · Abruf um 01:10 und 13:10 UTC, jeweils letzte 24 Stunden.';"
-           "p.append(info);document.body.prepend(p);});\n")
+    deploy = Path(__file__).resolve().parents[1] / 'deploy'
+    atomic(REPORT / 'navigation.js', (deploy / 'goaccess-duengerrechner.js').read_text())
+    atomic(REPORT.parent / 'goaccess-sites.js', (deploy / 'goaccess-sites.js').read_text())
     atomic(REPORT / 'summary.json', json.dumps(summary, ensure_ascii=True) + '\n')
     return summary
 
