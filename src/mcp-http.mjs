@@ -35,7 +35,7 @@ ${token ? html`<p>Authentifizierung: <strong>Bearer-Token</strong>.</p>` : html`
 <p>MCP steht für <strong>Model Context Protocol</strong>. Darüber erfährt dein Agent, welche Werkzeuge der Düngerrechner anbietet, und kann sie gezielt aufrufen: zum Beispiel Dünger suchen, Nährstoffmischungen berechnen und Wasserprofile verwalten.</p>
 <p>Die Verbindung läuft über HTTPS. Dein MCP-Client sendet strukturierte Anfragen per HTTP POST an diese URL und erhält die Ergebnisse als JSON oder über einen Ereignisstrom (SSE). Das erledigt der Client automatisch – du musst dafür keinen Code schreiben.</p>
 <p>Die Berechnung übernimmt der Düngerrechner mit derselben Rechenlogik wie die Weboberfläche. Dein Agent bekommt die berechneten Nährstoffwerte und ihre Abweichungen von den Zielbereichen zurück und kann darauf aufbauen.</p>
-<p>Beim Öffnen im Browser siehst du diese Hilfe. Ein MCP-Client nutzt dieselbe URL direkt als Schnittstelle. Falls ein einfacher GET-Aufruf „405 Method not allowed“ meldet, bedeutet das hier: Diese Anfrageart wird nicht unterstützt. Der MCP-Anschluss kann trotzdem ganz normal per POST genutzt werden.</p>
+<p>Beim Öffnen im Browser siehst du diese Hilfe. Ein MCP-Client nutzt dieselbe URL direkt als Schnittstelle.</p>
 <p><a href="/">Zum Düngerrechner</a></p></main></body></html>`);
     }
     if (gateway) {

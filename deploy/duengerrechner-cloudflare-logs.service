@@ -1,0 +1,11 @@
+[Unit]
+Description=Pull last 24h of Duengerrechner Cloudflare traffic into GoAccess
+Wants=network-online.target litellm-free-goaccess.service
+After=network-online.target litellm-free-goaccess.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/safrano9999/duengerrechner
+ExecStart=/usr/bin/python3 %h/safrano9999/duengerrechner/cloudflare/pull_logs.py
+TimeoutStartSec=10min
+UMask=0077

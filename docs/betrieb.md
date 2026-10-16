@@ -98,7 +98,50 @@ Die genaue Einrichtung steht in [CLOUDFLARE-WORKER-SKILL.md](../CLOUDFLARE-WORKE
 
 Der Worker liefert WebUI, REST, GraphQL und MCP aus. D1 speichert Wasserprofile. GitHub Pages liefert dieselbe statische WebUI; `backend.example.json` setzt deren API-/MCP-Links zum Worker. Eigene Ziele stehen in der ignorierten `backend.json` oder den Build-Variablen `PUBLIC_API_URL` und `PUBLIC_MCP_URL`. Der Browserrechner funktioniert weiterhin lokal ohne API-Aufruf.
 
-## Prüfung
+## Traffic in GoAccess
+
+Cloudflare Logpush liefert HTTP-Requests des Workers in den privaten R2-Bucket
+`f24-sales-access-logs`, unter dem eigenen Präfix `duengerrechner_http_requests`.
+`cloudflare/setup_logs.py` richtet den benannten Job idempotent ein. Er erfasst
+externe Requests auf `duengerrechner.safrano9999.workers.dev`, einschließlich MCP,
+REST und GraphQL. Interne Subrequests werden nicht doppelt gezählt. Die erste
+Log-Lieferung kann einige Minuten dauern. Der Worker selbst benötigt keinen Logger.
+
+Zugangsdaten stehen ausschließlich in der ignorierten `cloudflare/.env` (0600;
+Vorlage: `cloudflare/logging.env.example`). Python benötigt `httpx` und
+`python-dotenv`. Der Bucket bleibt privat; die vorhandenen Logpush-/R2-Kontingente
+und Tarife gelten. Es wurde kein neuer Plan aktiviert.
+
+Die Importlogik in `cloudflare/log_sync.py` und `setup_logs.py` wurde aus dem
+bestehenden LiteLLM-Free-Ablauf übernommen. Sie prüft exakt die letzten 24 Stunden,
+übernimmt jeden Request nur einmal und lädt bereits verarbeitete R2-Objekte nicht
+erneut. Nach längeren Ausfällen erfolgt kein Abruf älterer Daten. Lokal wächst das
+deduplizierte Archiv weiter; es liegt unter `~/.local/share/duengerrechner-goaccess/`.
+R2-Objekte werden durch den Pull nicht gelöscht. Request-Inhalte, Auth-Header und
+Query-Parameter werden nicht in den lokalen Bericht übernommen.
+
+`deploy/duengerrechner-cloudflare-logs.service` ist ein User-Oneshot.
+Der zugehörige Timer läuft um **01:10 und 13:10 UTC**, mit Nachholen bei Ausfall.
+Installation: beide Dateien nach `~/.config/systemd/user/` kopieren,
+`systemctl --user daemon-reload` und
+`systemctl --user enable --now duengerrechner-cloudflare-logs.timer` ausführen.
+Manueller Abruf:
+
+```sh
+systemctl --user start duengerrechner-cloudflare-logs.service
+```
+
+Die Auswertung nutzt das GoAccess-Binary im bereits laufenden Container
+`litellm-free-goaccess`. Sie erzeugt einen eigenen Bericht ohne gemeinsame
+Statistikdatenbank. Es wird kein Image gezogen und kein neuer Container gestartet.
+Im bestehenden privaten Dashboard führt die Rubrik **Düngerrechner — MCP & API**
+zum Bericht unter `/duengerrechner/`. Die Übersicht zeigt getrennte MCP- und
+REST/GraphQL-Zähler; der Detailbericht enthält auch Web-Aufrufe und zeigt unter
+anderem Pfade, Methoden und HTTP-Status.
+Die Zähler erfassen HTTP-Requests, nicht einzelne Werkzeuge innerhalb eines MCP-Batches.
+MCP-Browserbesuche und Protokollaufrufe sind über die HTTP-Methode unterscheidbar.
+
+## Tests
 
 ```sh
 npm test

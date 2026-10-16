@@ -1,0 +1,9 @@
+{
+  "bucket": "f24-sales-access-logs",
+  "prefix": "duengerrechner_http_requests",
+  "job_name": "duengerrechner-goaccess",
+  "hosts": [
+    "duengerrechner.safrano9999.workers.dev"
+  ],
+  "scope": "account"
+}

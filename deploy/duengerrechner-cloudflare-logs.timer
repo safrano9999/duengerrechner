@@ -1,0 +1,11 @@
+[Unit]
+Description=Pull Duengerrechner access logs twice daily
+
+[Timer]
+OnCalendar=*-*-* 01,13:10:00 UTC
+Persistent=true
+AccuracySec=1min
+Unit=duengerrechner-cloudflare-logs.service
+
+[Install]
+WantedBy=timers.target

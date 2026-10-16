@@ -11,6 +11,7 @@ build.conf
 *.container
 docker-compose.yml
 *.service
+!deploy/*.service
 wrangler.jsonc
 .dev.vars
 .wrangler/
