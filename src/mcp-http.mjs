@@ -26,10 +26,16 @@ export function mcpApp(call, config = {}, gateway) {
 <title>Düngerrechner · MCP</title><style>
 :root{color-scheme:light dark;font-family:system-ui,sans-serif}body{max-width:36rem;margin:12vh auto;padding:1.5rem;line-height:1.6}h1{line-height:1.2}input{box-sizing:border-box;width:100%;padding:.8rem;font:inherit;border:1px solid #888;border-radius:.5rem}a{color:inherit}
 </style></head><body><main><h1>Düngerrechner für deinen KI-Agenten</h1>
+<p><strong>Du bist hier richtig – alles funktioniert.</strong> Diese Seite hilft dir, deinen Agenten mit dem Düngerrechner zu verbinden.</p>
 <p>Das ist der MCP-Anschluss des Düngerrechners. Gib diese URL deinem Agenten oder trage sie in deinem MCP-Client ein:</p>
 <label for="endpoint">MCP-URL</label><input id="endpoint" type="url" readonly value="${endpoint}" aria-label="MCP-URL zum Kopieren">
 <p>Verbindungstyp: <strong>Streamable HTTP</strong>.</p>
-<p>Damit kann dein Agent Dünger suchen und Nährstoffmischungen berechnen.</p>
+${token ? html`<p>Authentifizierung: <strong>Bearer-Token</strong>.</p>` : html`<p><strong>Keine Authentifizierung nötig.</strong> Wähle bei der Einrichtung <strong>„None“ / „Keine“</strong>. Du brauchst weder ein Konto noch einen API-Key für diesen MCP-Anschluss.</p>`}
+<h2>Wie funktioniert das?</h2>
+<p>MCP steht für <strong>Model Context Protocol</strong>. Darüber erfährt dein Agent, welche Werkzeuge der Düngerrechner anbietet, und kann sie gezielt aufrufen: zum Beispiel Dünger suchen, Nährstoffmischungen berechnen und Wasserprofile verwalten.</p>
+<p>Die Verbindung läuft über HTTPS. Dein MCP-Client sendet strukturierte Anfragen per HTTP POST an diese URL und erhält die Ergebnisse als JSON oder über einen Ereignisstrom (SSE). Das erledigt der Client automatisch – du musst dafür keinen Code schreiben.</p>
+<p>Die Berechnung übernimmt der Düngerrechner mit derselben Rechenlogik wie die Weboberfläche. Dein Agent bekommt die berechneten Nährstoffwerte und ihre Abweichungen von den Zielbereichen zurück und kann darauf aufbauen.</p>
+<p>Beim Öffnen im Browser siehst du diese Hilfe. Ein MCP-Client nutzt dieselbe URL direkt als Schnittstelle. Falls ein einfacher GET-Aufruf „405 Method not allowed“ meldet, bedeutet das hier: Diese Anfrageart wird nicht unterstützt. Der MCP-Anschluss kann trotzdem ganz normal per POST genutzt werden.</p>
 <p><a href="/">Zum Düngerrechner</a></p></main></body></html>`);
     }
     if (gateway) {
